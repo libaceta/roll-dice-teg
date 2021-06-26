@@ -18,7 +18,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pampasoft.rollDiceTeg"
+      "bundleIdentifier": "com.pampasoft.rollDiceTeg",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {

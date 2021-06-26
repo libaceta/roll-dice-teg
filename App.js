@@ -188,6 +188,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.containerLeft}>
+        <Image source={require('./assets/swords.png')} style={styles.icon}></Image>
         <TouchableOpacity style={styles.button} onPress={()=>{ changeDice1() }}>
           <Image source={dice1}/>
         </TouchableOpacity>
@@ -199,6 +200,7 @@ export default function App() {
         </TouchableOpacity>
       </View>
       <View style={styles.containerRight}>
+        <Image source={require('./assets/shield.png')} style={styles.icon}></Image>
         <TouchableOpacity style={styles.button} onPress={()=>{ changeDice4() }}>
             <Image source={dice4}/>
         </TouchableOpacity>
@@ -237,5 +239,10 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 5,
     marginBottom: 5
+  },
+  icon: {
+    maxHeight: 75,
+    maxWidth: 75,
+    marginBottom: 20
   }
 });
