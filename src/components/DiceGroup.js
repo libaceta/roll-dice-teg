@@ -1,42 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 
 import Dice from './Dice';
 
 const DiceGroup = (props) => {
 
-    const [diceControls, setDiceControls] = useState([0,0,0]);
+    const dice1 = useRef();
+    const dice2 = useRef();
+    const dice3 = useRef();
 
-    let points;
+    const onRolling = (diceNumber) => {
 
-
-    const onRolling = (number, value) => {
-        console.log("Dice: " + number + " - Value: " + value);
-        let values = [...diceControls];
-        if (value == 0) {
-            for (let i = 0; i < values.length; i++) {
-                if (i > number) {
-                    values[i] = values[i] >= 0 ? -1 : values[i] - 1;
-                } else if (i < number) {
-                    values[i] = values[i] != 1 ? 1 : values[i] + 1;
-                } else {
-                    values[i] = 0;
-                }
-                console.log("values: " + values)
+        let values = generateAndOrderValues(diceNumber);
+        switch(diceNumber) {
+            case 1: {
+                dice1.current.rollDice(values[0]);
+                dice2.current.putInBlank();
+                dice3.current.putInBlank();
+                break;
             }
-            setDiceControls(values);
+            case 2: {
+                dice1.current.rollDice(values[0]);
+                dice2.current.rollDice(values[1]);
+                dice3.current.putInBlank();
+                break;
+            }
+            case 3: {
+                dice1.current.rollDice(values[0]);
+                dice2.current.rollDice(values[1]);
+                dice3.current.rollDice(values[2]);
+                break;
+            }
         }
-        
-        console.log("diceValues: " + diceControls);
+
+        props.onRollDice(props.groupId, values);
+
+    }
+
+    const generateAndOrderValues = (cantDices) => {
+        let values = [];
+        for (let i = 0; i < cantDices; i++) {
+            values.push(Math.floor(Math.random()*6));
+        }
+        values.sort();
+        values.reverse();
+        return values;
     }
 
     return (
-        <View style={`${props.isLeft ? styles.containerLeft : styles.containerRight}`}>
-          <Text style={`${styles.losses} ${points < 0 ? styles.red : styles.green}`}>{points}</Text>
+        <View style={props.isLeft ? styles.containerLeft : styles.containerRight}>
+          <Text style={[styles.losses, props.points < 0 ? styles.red : styles.green]}>{props.points}</Text>
           <Image source={props.logo} style={styles.icon}></Image>
-          <Dice number="0" rollDice={onRolling} values={diceControls} />
-          <Dice number="1" rollDice={onRolling} values={diceControls} />
-          <Dice number="2" rollDice={onRolling} values={diceControls} />
+          <Dice ref={dice1} number="1" rollDices={onRolling} />
+          <Dice ref={dice2} number="2" rollDices={onRolling} />
+          <Dice ref={dice3} number="3" rollDices={onRolling} />
         </View>
     );
 }
@@ -46,7 +63,8 @@ styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         marginTop: -70,
-        marginBottom: 30
+        marginBottom: 30,
+        textAlign: 'center'
     },
     red: {
         color: 'red'
@@ -58,13 +76,13 @@ styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     containerRight: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     icon: {
         maxHeight: 75,

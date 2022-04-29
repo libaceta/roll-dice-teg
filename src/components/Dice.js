@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle } from 'react';
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const Dice = (props) => {
+const Dice = React.forwardRef((props, ref) => {
 
     const sidesImages = [
         require('../../assets/dice-sides/side1.png'),
@@ -13,25 +13,22 @@ const Dice = (props) => {
     ];
 
     const [diceImage, setDiceImage] = useState(require('../../assets/dice-sides/sideA.png'));
-    const [diceValue, setDiceValue] = useState(1);
 
-    useEffect(() => {
-        console.log("useEffect Dice " + props.number);
-        if (props.values[props.number] > 0) {
-            rollDice();
-        } else if (props.values[props.number] < 0) {
-            putInBlank();
+    useImperativeHandle(ref, () => {
+        return {
+            rollDice: rollDice,
+            putInBlank: putInBlank
         }
-    }, [props.values[props.number]]);
+    });
 
     const putInBlank = () => {
         setDiceImage(require('../../assets/dice-sides/sideA.png'));
+        setTimeout(function() {
+            setDiceImage(require('../../assets/dice-sides/sideA.png'));
+        }, 1100);
     }
 
-
-    const rollDice = (event) => {
-        console.log("\n\nDice :" + props.number + " - values: " + props.values);
-        if (props.rollDice && event) props.rollDice(parseInt(props.number), 0);
+    const rollDice = (value) => {
 
         for(var i = 0; i < 10; i++){
             (function(i){
@@ -41,20 +38,23 @@ const Dice = (props) => {
             })(i);
         }
 
-        setTimeout(function(){
-            let value = Math.floor(Math.random()*sidesImages.length);
+        setTimeout(function() {
             setDiceImage(sidesImages[value]);
-            setDiceValue(value + 1);
-            if (props.rollDice) props.rollDice(parseInt(props.number), value + 1);
         }, 1100);
     }
 
+    const initAction = () => {
+        if (props.rollDices) {
+            props.rollDices(parseInt(props.number));
+        }
+    }
+
     return (
-        <TouchableOpacity style={styles.button} onPress={rollDice}>
+        <TouchableOpacity style={styles.button} onPress={initAction}>
             <Image source={diceImage}/>
         </TouchableOpacity>
     );
-}
+})
 
 const styles = StyleSheet.create({
     button: {
